@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Anderw Hearts Caitlin</title>
+  <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/esri/css/esri.css">
+  <link rel="stylesheet" href="http://js.arcgis.com/3.7/js/dojo/dijit/themes/claro/claro.css">
+  <script src="http://js.arcgis.com/3.7/"></script>
+  <style>
+    html, body, #mapDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+    #HomeButton {
+      position: absolute;
+      top: 95px;
+      left: 20px;
+      z-index: 50;
+    }
+  </style>
+</head>
+<body class="claro">
+  <div id="mapDiv">
+    <div id="HomeButton"></div>
+  </div>
+</body>
+<script>
+var map = null,
+    locationLayer = null,
+    locationLayerName = "Locations",
+    originalLocRenderer = null;
+
+function renderLocation(g) {
+  var s = originalLocRenderer.getSymbol(g);
+  var xOff = g.attributes.xOffset - (s.width/2),
+      yOff = g.attributes.yOffset - (s.height/2);
+  s.setOffset(-xOff, yOff);
+  return s;
+}
+
+require(["esri/map", "esri/arcgis/utils", "esri/dijit/Scalebar", "esri/dijit/HomeButton", "esri/renderers/SimpleRenderer", "dojo/domReady!"], 
+        function(Map, arcgisUtils, Scalebar, HomeButton, SimpleRenderer) { 
+  // code to create the map and add a basemap will go here 
+  arcgisUtils.createMap("9824b0420ffd402dbb957cad9ae63389","mapDiv").then(function(response){
+    map = response.map;
+
+    for (var i=0; i<map.graphicsLayerIds.length; i++) {
+      var layer = map.getLayer(map.graphicsLayerIds[i]);
+      switch (layer.arcgisProps.title) {
+        case locationLayerName:
+          originalLocRenderer = layer.renderer;
+          layer.renderer = new SimpleRenderer(originalLocRenderer.defaultSymbol);
+          layer.renderer.getSymbol = renderLocation;
+          break;
+      }
+    }
+    
+    var home = new HomeButton({
+      map: map
+    }, "HomeButton");
+    home.startup();
+    
+    var scalebar = new Scalebar({
+      map: map,
+      scalebarUnit: "english"
+    });
+  });
+});
+</script>
+</html>
