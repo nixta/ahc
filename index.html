@@ -44,7 +44,13 @@ function renderLocation(g) {
 require(["esri/map", "esri/arcgis/utils", "esri/dijit/Scalebar", "esri/dijit/HomeButton", "esri/renderers/SimpleRenderer", "dojo/domReady!"], 
         function(Map, arcgisUtils, Scalebar, HomeButton, SimpleRenderer) { 
   // code to create the map and add a basemap will go here 
-  arcgisUtils.createMap("9824b0420ffd402dbb957cad9ae63389","mapDiv").then(function(response){
+  var mapOptions = {
+    minZoom: 3,
+    maxZoom: 14,
+    logo: false,
+    wrapAround180: true
+  };
+  arcgisUtils.createMap("9824b0420ffd402dbb957cad9ae63389","mapDiv", { mapOptions: mapOptions}).then(function(response){
     map = response.map;
 
     for (var i=0; i<map.graphicsLayerIds.length; i++) {
